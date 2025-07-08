@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBox - Real-time Chat with Video Calls</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Free real-time chat application with HD video calls, voice calls, and instant messaging. No registration required, just create a room and start chatting!">
+    <meta name="keywords" content="chat, video call, voice call, real-time, messaging, webcam, free chat, online chat, video chat">
+    <meta name="author" content="ChatBox">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://chatbox-app.vercel.app/">
+    <meta property="og:title" content="ChatBox - Real-time Chat with Video Calls">
+    <meta property="og:description" content="Free real-time chat application with HD video calls, voice calls, and instant messaging. No registration required!">
+    <meta property="og:image" content="https://chatbox-app.vercel.app/chatbox-preview.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://chatbox-app.vercel.app/">
+    <meta property="twitter:title" content="ChatBox - Real-time Chat with Video Calls">
+    <meta property="twitter:description" content="Free real-time chat application with HD video calls, voice calls, and instant messaging. No registration required!">
+    <meta property="twitter:image" content="https://chatbox-app.vercel.app/chatbox-preview.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#667eea">
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "ChatBox",
+        "description": "Real-time chat application with video and voice calling",
+        "url": "https://chatbox-app.vercel.app",
+        "applicationCategory": "CommunicationApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        }
+    }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Screen -->
+        <div id="loginScreen" class="login-screen">
+            <div class="login-card">
+                <div class="login-header">
+                    <i class="fas fa-comments"></i>
+                    <h1>ChatBox</h1>
+                    <p>Join the conversation</p>
+                </div>
+                
+                <!-- Room Options -->
+                <div class="room-options">
+                    <button id="createRoomBtn" class="room-btn active">
+                        <i class="fas fa-plus"></i>
+                        Create New Room
+                    </button>
+                    <button id="joinRoomBtn" class="room-btn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Join Existing Room
+                    </button>
+                </div>
+
+                <!-- Create Room Form -->
+                <form id="createRoomForm" class="login-form">
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="createUsername" placeholder="Enter your username" required>
+                    </div>
+                    <button type="submit" class="join-btn">
+                        <i class="fas fa-plus"></i>
+                        Create Room
+                    </button>
+                </form>
+
+                <!-- Join Room Form -->
+                <form id="joinRoomForm" class="login-form hidden">
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="joinUsername" placeholder="Enter your username" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-key"></i>
+                        <input type="text" id="roomId" placeholder="Enter Room ID" required>
+                    </div>
+                    <button type="submit" class="join-btn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Join Room
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Chat Screen -->
+        <div id="chatScreen" class="chat-screen hidden">
+            <div class="chat-header">
+                <div class="header-left">
+                    <i class="fas fa-comments"></i>
+                    <h2>ChatBox</h2>
+                    <span id="roomInfo" class="room-info">
+                        <i class="fas fa-hashtag"></i>
+                        <span id="roomIdDisplay">ROOM</span>
+                    </span>
+                </div>
+                <div class="header-right">
+                    <span id="connectionStatus" class="connection-status connected">
+                        <i class="fas fa-circle"></i>
+                        Connected
+                    </span>
+                    <span id="userCount" class="user-count">
+                        <i class="fas fa-users"></i>
+                        <span id="userCountText">0</span>
+                    </span>
+                    <button id="videoCallBtn" class="call-btn" title="Start Video Call">
+                        <i class="fas fa-video"></i>
+                    </button>
+                    <button id="voiceCallBtn" class="call-btn" title="Start Voice Call">
+                        <i class="fas fa-phone"></i>
+                    </button>
+                    <button id="inviteBtn" class="invite-btn" title="Invite others">
+                        <i class="fas fa-share-alt"></i>
+                        Invite
+                    </button>
+                    <button id="leaveBtn" class="leave-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Leave
+                    </button>
+                </div>
+            </div>
+
+            <div class="chat-container">
+                <div class="chat-sidebar">
+                    <div class="sidebar-header">
+                        <h3><i class="fas fa-users"></i> Online Users</h3>
+                    </div>
+                    <div id="usersList" class="users-list">
+                        <!-- Users will be populated here -->
+                    </div>
+                </div>
+
+                <div class="chat-main">
+                    <div id="messagesContainer" class="messages-container">
+                        <!-- Messages will be populated here -->
+                    </div>
+
+                    <div class="typing-indicator" id="typingIndicator">
+                        <span id="typingText"></span>
+                    </div>
+
+                    <div class="message-input-container">
+                        <form id="messageForm" class="message-form">
+                            <div class="input-wrapper">
+                                <input 
+                                    type="text" 
+                                    id="messageInput" 
+                                    placeholder="Type your message..." 
+                                    autocomplete="off"
+                                >
+                                <button type="submit" class="send-btn">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Call Container -->
+                <div id="callContainer" class="call-container hidden">
+                    <div class="call-header">
+                        <h3 id="callStatus">Incoming Call...</h3>
+                        <button id="endCallBtn" class="end-call-btn">
+                            <i class="fas fa-phone-slash"></i>
+                            End Call
+                        </button>
+                    </div>
+                    <div class="video-container">
+                        <div class="remote-video-wrapper">
+                            <video id="remoteVideo" autoplay playsinline muted></video>
+                            <div class="remote-video-overlay">
+                                <span id="remoteUsername">Remote User</span>
+                            </div>
+                        </div>
+                        <div class="local-video-wrapper">
+                            <video id="localVideo" autoplay muted playsinline></video>
+                            <div class="local-video-overlay">
+                                <span>You</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="call-controls">
+                        <button id="toggleVideoBtn" class="control-btn" title="Toggle Video">
+                            <i class="fas fa-video"></i>
+                        </button>
+                        <button id="toggleAudioBtn" class="control-btn" title="Toggle Audio">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <button id="switchCameraBtn" class="control-btn" title="Switch Camera">
+                            <i class="fas fa-sync"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invite Modal -->
+        <div id="inviteModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-share-alt"></i> Invite Others</h3>
+                    <button id="closeModal" class="close-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="invite-section">
+                        <h4>Room Information</h4>
+                        <div class="room-details">
+                            <div class="detail-item">
+                                <span class="label">Room ID:</span>
+                                <span id="modalRoomId" class="value"></span>
+                                <button id="copyRoomId" class="copy-btn" title="Copy Room ID">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Invite Link:</span>
+                                <div class="link-container">
+                                    <input type="text" id="inviteLink" readonly>
+                                    <button id="copyLink" class="copy-btn" title="Copy Link">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="share-section">
+                        <h4>Share via</h4>
+                        <div class="share-buttons">
+                            <button id="shareWhatsApp" class="share-btn whatsapp">
+                                <i class="fab fa-whatsapp"></i>
+                                WhatsApp
+                            </button>
+                            <button id="shareTelegram" class="share-btn telegram">
+                                <i class="fab fa-telegram"></i>
+                                Telegram
+                            </button>
+                            <button id="shareEmail" class="share-btn email">
+                                <i class="fas fa-envelope"></i>
+                                Email
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
